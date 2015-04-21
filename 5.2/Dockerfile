@@ -72,7 +72,7 @@ RUN apt-get remove -y autoconf2.13
 RUN rm -rf /tmp/* /var/tmp/*
 
 # Get out of /tmp
-WORKDIR /
+RUN cd /
 
 # Add entrypoint
 COPY init.sh /init
