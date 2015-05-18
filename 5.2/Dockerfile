@@ -7,6 +7,8 @@ MAINTAINER Helder Correia <me@heldercorreia.com>
 RUN apt-get update \
     && apt-get install -y \
         autoconf2.13 \
+	sudo \
+	msmtp \
         libbz2-dev \
         libcurl4-openssl-dev \
         libltdl-dev \
@@ -16,6 +18,7 @@ RUN apt-get update \
         libmysqlclient-dev \
         libpcre3-dev \
         libpng12-dev \
+	libjpeg-dev \
         libxml2-dev \
         make \
         patch \
@@ -58,6 +61,7 @@ RUN ./configure \
     --with-mysqli \
     --with-openssl \
     --with-pcre-regex \
+    --with-jpeg-dir \
     --with-png-dir \
     --with-zlib \
     --without-sqlite
@@ -74,10 +78,24 @@ RUN rm -rf /tmp/* /var/tmp/*
 # Get out of /tmp
 RUN cd /
 
+# msmtp
+RUN touch /etc/msmtprc
+RUN echo "defaults\n account default\n host localhost\n port 25\n from www-data@web02.comphaan.prd.livebytes.org\n logfile /var/log/msmtp/msmtp.log" > /etc/msmtprc
+
+RUN cat /etc/msmtprc
+
+RUN mkdir -p /var/log/msmtp
+RUN chown www-data:adm /var/log/msmtp
+
+RUN touch /etc/logrotate.d/msmtp
+RUN rm /etc/logrotate.d/msmtp
+RUN echo "/var/log/msmtp/*.log {\n rotate 12\n monthly\n compress\n missingok\n notifempty\n }" > /etc/logrotate.d/msmtp
+
 # Add entrypoint
 COPY init.sh /init
 ENTRYPOINT ["/init"]
 
 # Run php-fpm
 EXPOSE 9000
-CMD ["php-cgi", "--fpm"]
+EXPOSE 25
+CMD ["php-cgi", "--fpm"] 

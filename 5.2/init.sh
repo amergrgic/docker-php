@@ -65,7 +65,7 @@ cat <<END > /etc/php/php-fpm.conf
 
             Additional php.ini defines, specific to this pool of workers.
             <value name="php_defines">
-                <!-- <value name="sendmail_path">/usr/sbin/sendmail -t -i</value> -->
+                <value name="sendmail_path">/usr/bin/msmtp -t</value>
                 <value name="log_errors">On</value>
                 <value name="error_reporting">E_ALL | ~E_STRICT</value>
                 <value name="date.timezone">${TIMEZONE}</value>
